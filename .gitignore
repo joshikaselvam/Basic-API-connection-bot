@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Venvs
+venv/
+.venv/
+
+# Secrets
+.env
+.env.*.local
+
+# Editor/OS
+.vscode/
+.DS_Store

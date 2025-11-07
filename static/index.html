@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f2f5;
+      margin: 0;
+    }
+    .chat-container {
+      width: 400px;
+      height: 500px;
+      background: white;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 8px 12px;
+      border-radius: 15px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+    .user-message {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .bot-message {
+      background: #ececec;
+      align-self: flex-start;
+    }
+    .typing {
+      font-size: 12px;
+      color: gray;
+      font-style: italic;
+      margin: 5px;
+    }
+    .input-box {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-box">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+
+    function appendMessage(content, type) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", type === "user" ? "user-message" : "bot-message");
+      messageDiv.innerText = content;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight; // auto-scroll
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+
+      appendMessage(userMessage, "user");
+      input.value = "";
+
+      // Show typing indicator
+      const typingDiv = document.createElement("div");
+      typingDiv.classList.add("typing");
+      typingDiv.innerText = "Bot is typing...";
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Call backend
+      const response = await fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      const data = await response.json();
+      typingDiv.remove(); // remove typing indicator
+      appendMessage(data.reply, "bot");
+    }
+  </script>
+</body>
+</html>
