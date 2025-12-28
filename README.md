@@ -21,4 +21,4 @@ Frontend	HTML, JS
 Package Manager	pip
 Deployment Ready	Render, Railway, Vercel (via serverless adapter)
 
-\
+
